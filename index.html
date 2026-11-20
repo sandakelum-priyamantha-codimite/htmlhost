@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Print Alignment Tests</title>
+<style>
+  :root {
+    --bg: #f4f4f2; --card: #fff; --text: #1d1d1b; --muted: #66665f;
+    --line: #dcdcd6; --accent: #1f5fbf;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161615; --card: #20201e; --text: #ececea; --muted: #a3a39c;
+      --line: #3a3a36; --accent: #7aa7ee;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 48px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .lead { color: var(--muted); margin: 0 0 32px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .card {
+    display: flex; flex-direction: column; gap: 14px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 20px; color: inherit; text-decoration: none;
+    transition: border-color .15s, transform .15s;
+  }
+  .card:hover, .card:focus-visible { border-color: var(--accent); transform: translateY(-2px); }
+  .thumb { display: flex; justify-content: center; align-items: flex-end; height: 120px; }
+  .paper {
+    background: #fff; border: 1px solid #999; position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  }
+  .paper::before, .paper::after { content: ""; position: absolute; border: 1px solid #333; }
+  .paper::before { inset: 3px; }
+  .paper::after  { inset: 6px; border-color: #888; }
+  .card h2 { font-size: 18px; margin: 0; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .open { color: var(--accent); font-size: 14px; font-weight: 600; margin-top: auto; }
+
+  section { margin-top: 40px; }
+  section h2 { font-size: 17px; margin: 0 0 10px; }
+  ol { margin: 0; padding-left: 20px; color: var(--text); }
+  li { margin-bottom: 4px; }
+  code { font-size: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Print Alignment Tests</h1>
+  <p class="lead">Single-page diagnostics for checking printer offsets, scaling and centering. Each page is drawn in physical units, so every mark sits at an exact distance from the paper edge.</p>
+
+  <div class="grid">
+    <a class="card" href="a4.html">
+      <div class="thumb"><div class="paper" style="width:85px;height:120px"></div></div>
+      <h2>A4</h2>
+      <p>210 &times; 297 mm &middot; 8.27 &times; 11.69 in</p>
+      <span class="open">Open test page &rarr;</span>
+    </a>
+    <a class="card" href="letter.html">
+      <div class="thumb"><div class="paper" style="width:93px;height:120px"></div></div>
+      <h2>US Letter</h2>
+      <p>8.5 &times; 11 in &middot; 215.9 &times; 279.4 mm</p>
+      <span class="open">Open test page &rarr;</span>
+    </a>
+    <a class="card" href="legal.html">
+      <div class="thumb"><div class="paper" style="width:73px;height:120px"></div></div>
+      <h2>US Legal</h2>
+      <p>8.5 &times; 14 in &middot; 215.9 &times; 355.6 mm</p>
+      <span class="open">Open test page &rarr;</span>
+    </a>
+  </div>
+
+  <section>
+    <h2>How to print</h2>
+    <ol>
+      <li>Open a test page and press <code>Ctrl</code>+<code>P</code> (<code>&#8984;</code>+<code>P</code> on macOS).</li>
+      <li>Choose the matching paper size.</li>
+      <li>Set <strong>Scale</strong> to 100% / Actual size, not &ldquo;Fit to page&rdquo;.</li>
+      <li>Set <strong>Margins</strong> to None and turn off <strong>Headers and footers</strong>.</li>
+      <li>Measure the printout: the outer border should be 0.25 in and the inner border 0.50 in from every edge.</li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>
