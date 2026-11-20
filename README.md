@@ -4,7 +4,8 @@ Single-page HTML diagnostics for checking printer offsets, scaling and centering
 on A4, US Letter and US Legal paper.
 
 - `index.html` – landing page
-- `a4.html`, `letter.html`, `legal.html` – test pages (generated)
+- `a4.html`, `letter.html`, `legal.html` – alignment test pages (generated)
+- `a4-full.html`, `letter-full.html`, `legal-full.html` – full-bleed edge test pages (generated)
 - `build.py` – generator; edit it and run `python3 build.py` to rebuild the pages
 
-Print with **Scale: 100% / Actual size**, **Margins: None**, and headers/footers off.
+Pages have no print stylesheet. Print with the matching page size, **margins none** and **100% scale** (e.g. Electron `webContents.print({ pageSize: "A4", margins: { marginType: "none" } })`).

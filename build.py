@@ -139,59 +139,141 @@ def svg_body(p):
     return "\n  ".join(s)
 
 
+def svg_full(p):
+    """Full-bleed variant: marks run to the paper edge."""
+    w, h = p["w"], p["h"]
+    cx, cy = w / 2, h / 2
+    s = []
+    a = s.append
+    sw = 0.0139
+
+    # Edge border, inset by half its stroke so it sits exactly on the edge
+    a(f'<rect class="border" x="{f(sw/2)}" y="{f(sw/2)}" width="{f(w-sw)}" height="{f(h-sw)}"/>')
+
+    # Clip gauges: lines at 1-10 mm from each edge
+    gx, gy = round(w * 0.25, 2), round(h * 0.25, 2)
+    gl = 0.4
+    for d in range(1, 11):
+        m = d / 25.4
+        lab = d % 2 == 0
+        # top / bottom: horizontal lines
+        for y, ty in ((m, m + 0.02), (h - m, h - m + 0.02)):
+            a(f'<line class="hair" x1="{f(gx)}" y1="{f(y)}" x2="{f(gx+gl)}" y2="{f(y)}"/>')
+            if lab:
+                a(f'<text x="{f(gx+gl+0.04)}" y="{f(ty)}" font-size="0.055">{d}</text>')
+        # left / right: vertical lines
+        for x in (m, w - m):
+            a(f'<line class="hair" x1="{f(x)}" y1="{f(gy)}" x2="{f(x)}" y2="{f(gy+gl)}"/>')
+            if lab:
+                a(f'<text x="{f(x)}" y="{f(gy+gl+0.08)}" font-size="0.055" class="mid">{d}</text>')
+    a(f'<text x="{f(gx)}" y="0.53" font-size="0.07">mm from top edge</text>')
+    a(f'<text x="{f(gx)}" y="{f(h-0.47)}" font-size="0.07">mm from bottom edge</text>')
+    a(f'<text x="0.06" y="{f(gy-0.07)}" font-size="0.07">mm from left</text>')
+    a(f'<text x="{f(w-0.06)}" y="{f(gy-0.07)}" font-size="0.07" class="end">mm from right</text>')
+
+    # Edge rulers (1/8 in ticks, measured from the top-left corner)
+    def skip(v, lo):
+        return v < 0.3 or (lo - 0.05 <= v <= lo + gl + 0.25)
+    for k in range(1, int(w * 8) + 1):
+        x = k / 8
+        if x > w - 0.3 or skip(x, gx):
+            continue
+        L = 0.2 if k % 8 == 0 else 0.12 if k % 4 == 0 else 0.06
+        a(f'<line class="hair" x1="{f(x)}" y1="0" x2="{f(x)}" y2="{L}"/>')
+        a(f'<line class="hair" x1="{f(x)}" y1="{f(h)}" x2="{f(x)}" y2="{f(h-L)}"/>')
+        if k % 8 == 0:
+            a(f'<text x="{f(x)}" y="0.31" font-size="0.075" class="mid">{k//8}</text>')
+            a(f'<text x="{f(x)}" y="{f(h-0.25)}" font-size="0.075" class="mid">{k//8}</text>')
+    for k in range(1, int(h * 8) + 1):
+        y = k / 8
+        if y > h - 0.3 or skip(y, gy):
+            continue
+        L = 0.2 if k % 8 == 0 else 0.12 if k % 4 == 0 else 0.06
+        a(f'<line class="hair" x1="0" y1="{f(y)}" x2="{L}" y2="{f(y)}"/>')
+        a(f'<line class="hair" x1="{f(w)}" y1="{f(y)}" x2="{f(w-L)}" y2="{f(y)}"/>')
+        if k % 8 == 0:
+            a(f'<text x="0.25" y="{f(y+0.027)}" font-size="0.075">{k//8}</text>')
+            a(f'<text x="{f(w-0.25)}" y="{f(y+0.027)}" font-size="0.075" class="end">{k//8}</text>')
+
+    # Corner labels and footer
+    a('<text x="0.30" y="0.55" font-size="0.085">TOP / LEFT (0 in)</text>')
+    a(f'<text x="{f(w-0.30)}" y="0.55" font-size="0.085" class="end">TOP / RIGHT</text>')
+    a(f'<text x="0.30" y="{f(h-0.47)}" font-size="0.085">BOTTOM / LEFT</text>')
+    a(f'<text x="{f(w-0.30)}" y="{f(h-0.47)}" font-size="0.085" class="end">BOTTOM / RIGHT</text>')
+    a(f'<text x="{f(cx)}" y="{f(h-0.62)}" font-size="0.085" class="mid">'
+      f'NTK HTML full-bleed diagnostic - {p["footer_size"]}</text>')
+
+    # Dashed centre lines, edge to edge
+    a(f'<line class="dash" x1="{f(cx)}" y1="0" x2="{f(cx)}" y2="{f(h)}"/>')
+    a(f'<line class="dash" x1="0" y1="{f(cy)}" x2="{f(w)}" y2="{f(cy)}"/>')
+
+    # Header
+    title = p["title"].replace("Alignment Test", "Full-Bleed Test")
+    a(f'<text x="{f(cx)}" y="0.95" font-size="0.25" class="b mid">{title}</text>')
+    a(f'<text x="{f(cx)}" y="1.15" font-size="0.13" class="mid">Page size: {p["size_text"]}</text>')
+    a(f'<text x="{f(cx)}" y="1.33" font-size="0.13" class="mid">'
+      'Print at 100% / Actual Size with no margins</text>')
+
+    # Horizontal alignment reference
+    a(f'<text x="{f(cx)}" y="{f(cy-0.62)}" font-size="0.11" class="b mid">HORIZONTAL ALIGNMENT REFERENCE</text>')
+    for n in range(1, int(w)):
+        lx = n - 0.07 if abs(n - cx) < 0.1 else n
+        a(f'<line class="line" x1="{n}" y1="{f(cy-0.40)}" x2="{n}" y2="{f(cy-0.23)}"/>'
+          f'<text x="{f(lx)}" y="{f(cy-0.08)}" font-size="0.095" class="mid">{n}"</text>')
+
+    # Centre target
+    a(f'<circle class="line" cx="{f(cx)}" cy="{f(cy)}" r="0.33"/>')
+    a(f'<circle class="line" cx="{f(cx)}" cy="{f(cy)}" r="0.17"/>')
+    a(f'<line class="line" x1="{f(cx-0.485)}" y1="{f(cy)}" x2="{f(cx+0.485)}" y2="{f(cy)}"/>')
+    a(f'<line class="line" x1="{f(cx)}" y1="{f(cy-0.485)}" x2="{f(cx)}" y2="{f(cy+0.485)}"/>')
+    a(f'<text x="{f(cx)}" y="{f(cy+0.71)}" font-size="0.11" class="b mid">PAGE CENTER</text>')
+
+    # Validation checks
+    checks = [
+        "The border line sits on the paper edge; any edge where it is missing is being clipped.",
+        "Read each mm gauge: the first visible line is the unprintable margin on that edge.",
+        "Ruler ticks should measure true inches; 1\" to 7\" should span exactly 6 in.",
+        "Center target should remain at the physical center of the sheet.",
+        "Print with margins set to none and the matching page size (no scaling).",
+    ]
+    vy = h - 2.29
+    a(f'<text x="0.70" y="{f(vy)}" font-size="0.15" class="b">Validation checks</text>')
+    for k, line in enumerate(checks, 1):
+        a(f'<text x="0.70" y="{f(vy+0.03+0.2*k)}" font-size="0.105">{k}. {line}</text>')
+
+    return "\n  ".join(s)
+
+
 TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{name} Alignment Test</title>
+<title>{page_title}</title>
 <!-- Generated by build.py - edit the generator, not this file. -->
 <style>
-  /* {name} = {w_in} x {h_in} in. No browser margins: every mark is
-     positioned from the physical paper edge. */
-  @page {{ size: {css_size} portrait; margin: 0; }}
-
-  * {{ box-sizing: border-box; }}
-  html, body {{ margin: 0; padding: 0; }}
-  body {{ background: #e5e5e5; font-family: Arial, Helvetica, sans-serif; }}
-
-  .sheet {{
-    display: block;
-    width: {w_in}in;
-    height: {h_in}in;
-    margin: 10mm auto;
+  /* {name} = {w_in} x {h_in} in. The sheet starts at 0,0 with no page
+     margins, so print with margins "none" and the matching page size. */
+  html, body {{
+    margin: 0; padding: 0;
+    width: {w_in}in; height: {h_in}in;
+    overflow: hidden;            /* never spill onto a second page */
     background: #fff;
-    box-shadow: 0 0 6px rgba(0,0,0,0.25);
   }}
+  .sheet {{ display: block; width: {w_in}in; height: {h_in}in; }}
   .sheet text {{ fill: #000; font-family: Arial, Helvetica, sans-serif; }}
   .b {{ font-weight: bold; }}
   .mid {{ text-anchor: middle; }}
   .end {{ text-anchor: end; }}
+  .hair   {{ stroke: #000; stroke-width: 0.0069; fill: none; }}   /* 0.5pt */
   .line   {{ stroke: #000; stroke-width: 0.0104; fill: none; }}   /* 0.75pt */
   .border {{ stroke: #000; stroke-width: 0.0139; fill: none; }}   /* 1pt */
   .dash   {{ stroke: #000; stroke-width: 0.0104; stroke-dasharray: 0.06 0.04; fill: none; }}
-
-  .back {{
-    display: block; width: {w_in}in; margin: 6mm auto -4mm;
-    font-size: 13px; color: #333;
-  }}
-
-  @media print {{
-    body {{ background: #fff; }}
-    .sheet {{ margin: 0; box-shadow: none; }}
-    .back {{ display: none; }}
-  }}
-  @media screen and (max-width: {max_w}in) {{
-    .sheet {{ width: 100%; height: auto; margin: 0; box-shadow: none; }}
-    .back {{ width: auto; margin: 12px 16px; }}
-  }}
 </style>
 </head>
 <body>
-<a class="back" href="./">&larr; All alignment tests</a>
 <!-- viewBox units are inches -->
 <svg class="sheet" viewBox="0 0 {w} {h}" xmlns="http://www.w3.org/2000/svg"
-     role="img" aria-label="{name} alignment test page">
+     role="img" aria-label="{page_title}">
   {body}
 </svg>
 </body>
@@ -201,15 +283,19 @@ TEMPLATE = """<!DOCTYPE html>
 
 def main():
     for p in PAGES:
-        html = TEMPLATE.format(
-            name=p["name"], css_size=p["css_size"],
-            w=f(p["w"]), h=f(p["h"]),
-            w_in=f(round(p["w"], 4)), h_in=f(round(p["h"], 4)),
-            max_w=f(round(p["w"] + 0.5, 2)),
-            body=svg_body(p),
-        )
-        (OUT / p["file"]).write_text(html)
-        print("wrote", p["file"])
+        for variant, render, suffix, label in (
+            ("standard", svg_body, "", "Alignment Test"),
+            ("full", svg_full, "-full", "Full-Bleed Test"),
+        ):
+            fname = p["file"].replace(".html", suffix + ".html")
+            html = TEMPLATE.format(
+                name=p["name"], page_title=f'{p["name"]} {label}',
+                w=f(p["w"]), h=f(p["h"]),
+                w_in=f(round(p["w"], 4)), h_in=f(round(p["h"], 4)),
+                body=render(p),
+            )
+            (OUT / fname).write_text(html)
+            print("wrote", fname)
 
 
 if __name__ == "__main__":

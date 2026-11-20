@@ -48,6 +48,15 @@
   section h2 { font-size: 17px; margin: 0 0 10px; }
   ol { margin: 0; padding-left: 20px; color: var(--text); }
   li { margin-bottom: 4px; }
+  h2.group { font-size: 20px; margin: 44px 0 4px; }
+  .lead.small { font-size: 15px; margin-bottom: 20px; }
+  .paper.full::before { inset: 0; border-color: #222; }
+  .paper.full::after { inset: 0; border: 0; background:
+    repeating-linear-gradient(to right, #333 0 1px, transparent 1px 8px) top / 100% 4px no-repeat,
+    repeating-linear-gradient(to bottom, #333 0 1px, transparent 1px 8px) left / 4px 100% no-repeat; }
+  pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 0 0 10px; }
+  pre code { border: 0; padding: 0; background: none; }
+  .note { color: var(--muted); font-size: 14px; margin: 0; }
   code { font-size: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
 </style>
 </head>
@@ -77,13 +86,48 @@
     </a>
   </div>
 
+  <h2 class="group">Full-bleed tests</h2>
+  <p class="lead small">Marks run right to the paper edge: an edge border, inch rulers on all four sides, and 1&ndash;10&nbsp;mm gauges that show how much the printer clips on each edge.</p>
+  <div class="grid">
+    <a class="card" href="a4-full.html">
+      <div class="thumb"><div class="paper full" style="width:85px;height:120px"></div></div>
+      <h2>A4 full-bleed</h2>
+      <p>210 &times; 297 mm &middot; 8.27 &times; 11.69 in</p>
+      <span class="open">Open test page &rarr;</span>
+    </a>
+    <a class="card" href="letter-full.html">
+      <div class="thumb"><div class="paper full" style="width:93px;height:120px"></div></div>
+      <h2>US Letter full-bleed</h2>
+      <p>8.5 &times; 11 in &middot; 215.9 &times; 279.4 mm</p>
+      <span class="open">Open test page &rarr;</span>
+    </a>
+    <a class="card" href="legal-full.html">
+      <div class="thumb"><div class="paper full" style="width:73px;height:120px"></div></div>
+      <h2>US Legal full-bleed</h2>
+      <p>8.5 &times; 14 in &middot; 215.9 &times; 355.6 mm</p>
+      <span class="open">Open test page &rarr;</span>
+    </a>
+  </div>
+
   <section>
-    <h2>How to print</h2>
+    <h2>How to print from Electron</h2>
+    <pre><code>win.webContents.print({
+  silent: false,
+  pageSize: 'A4',            // or 'Letter' / 'Legal'
+  margins: { marginType: 'none' },
+  scaleFactor: 100,
+  printBackground: true,
+});</code></pre>
+    <p class="note">The pages have no print stylesheet; the sheet starts at the top-left corner, so the page size and zero margins must come from the print options above.</p>
+  </section>
+
+  <section>
+    <h2>How to print from a browser</h2>
     <ol>
       <li>Open a test page and press <code>Ctrl</code>+<code>P</code> (<code>&#8984;</code>+<code>P</code> on macOS).</li>
       <li>Choose the matching paper size.</li>
       <li>Set <strong>Scale</strong> to 100% / Actual size, not &ldquo;Fit to page&rdquo;.</li>
-      <li>Set <strong>Margins</strong> to None and turn off <strong>Headers and footers</strong>.</li>
+      <li>Set <strong>Margins</strong> to None and turn off <strong>Headers and footers</strong> (the pages have no print stylesheet, so these settings matter).</li>
       <li>Measure the printout: the outer border should be 0.25 in and the inner border 0.50 in from every edge.</li>
     </ol>
   </section>
