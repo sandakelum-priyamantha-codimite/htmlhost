@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>A4 Background Test</title>
+<style>
+  /* 3 A4 sheets. Print with page size A4, margins none, scale 100% and
+     backgrounds ON (Electron: printBackground: true). Every tile should
+     look the same on paper as it does on screen. */
+  :root {
+    --chk: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Crect width='5' height='5' fill='%23000'/%3E%3Crect x='5' y='5' width='5' height='5' fill='%23000'/%3E%3C/svg%3E");
+    --dot: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='5' fill='%23d62728'/%3E%3C/svg%3E");
+    --tgt: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%231f77b4'/%3E%3Cpath d='M20 2v36M2 20h36' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E");
+  }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #000; }
+  .page { box-sizing: border-box; width: 210mm; height: 297mm; overflow: hidden;
+          padding: 10mm; display: flex; flex-direction: column; gap: 3mm; position: relative; }
+  .brk { break-after: page; page-break-after: always; }
+  header, footer { display: flex; justify-content: space-between; font-size: 10pt; }
+  header { border-bottom: 0.75pt solid #000; padding-bottom: 1.5mm; }
+  footer { margin-top: auto; border-top: 0.75pt solid #000; padding-top: 1.5mm; font-size: 8pt; }
+  h2 { font-size: 10pt; margin: 1mm 0 0; }
+  .note { font-size: 7.5pt; margin: 0; line-height: 1.35; }
+  .grid { display: grid; gap: 3mm; }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g10 { grid-template-columns: repeat(10, 1fr); gap: 0; }
+  .tile { display: flex; flex-direction: column; gap: 1mm; font-size: 6.5pt; line-height: 1.25; }
+  .sw { height: 24mm; border: 0.5pt solid #000; box-sizing: border-box; }
+  .sw.s { height: 14mm; }
+  .tile b { font-size: 7pt; }
+  .ramp div { height: 10mm; font-size: 6pt; display: flex; align-items: flex-end;
+              justify-content: center; padding-bottom: 0.5mm; }
+
+  /* Page 1: full-bleed sheet background */
+  .bleed { background: #e8f1fb; }
+  .bleed::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+                   border: 3mm solid #1f77b4; }
+  .bleed > * { position: relative; }
+</style>
+</head>
+<body>
+
+<!-- ============================ PAGE 1 ============================ -->
+<section class="page brk bleed">
+  <header><b>CSS Background Print Test - A4</b><span>Page 1 / 3 &middot; Solid colours</span></header>
+  <p class="note">This sheet has a light-blue background and a 3&nbsp;mm blue frame running to the paper edge. If the page prints white with no frame, backgrounds are off (<code>printBackground: false</code> / &ldquo;Background graphics&rdquo; unticked). Any white strip at an edge is printer clipping.</p>
+
+  <h2>1. Primaries &amp; process colours</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:#000"></div><b>#000000</b>Solid black</div>
+    <div class="tile"><div class="sw" style="background:#ff0000"></div><b>#FF0000</b>Red</div>
+    <div class="tile"><div class="sw" style="background:#00ff00"></div><b>#00FF00</b>Green</div>
+    <div class="tile"><div class="sw" style="background:#0000ff"></div><b>#0000FF</b>Blue</div>
+    <div class="tile"><div class="sw" style="background:#00ffff"></div><b>#00FFFF</b>Cyan</div>
+    <div class="tile"><div class="sw" style="background:#ff00ff"></div><b>#FF00FF</b>Magenta</div>
+    <div class="tile"><div class="sw" style="background:#ffff00"></div><b>#FFFF00</b>Yellow</div>
+    <div class="tile"><div class="sw" style="background:#fff"></div><b>#FFFFFF</b>White (should match paper, not the blue sheet)</div>
+  </div>
+
+  <h2>2. Grey steps (0&ndash;100% black)</h2>
+  <div class="grid g10 ramp">
+    <div style="background:#fff">0</div><div style="background:#e6e6e6">10</div>
+    <div style="background:#ccc">20</div><div style="background:#b3b3b3">30</div>
+    <div style="background:#999">40</div><div style="background:#808080;color:#fff">50</div>
+    <div style="background:#666;color:#fff">60</div><div style="background:#4d4d4d;color:#fff">70</div>
+    <div style="background:#333;color:#fff">80</div><div style="background:#000;color:#fff">100</div>
+  </div>
+
+  <h2>3. Near-white tints (often dropped by drivers / toner saving)</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw s" style="background:#fafafa"></div><b>#FAFAFA</b>2% grey</div>
+    <div class="tile"><div class="sw s" style="background:#f2f2f2"></div><b>#F2F2F2</b>5% grey</div>
+    <div class="tile"><div class="sw s" style="background:#fff8dc"></div><b>#FFF8DC</b>Cornsilk</div>
+    <div class="tile"><div class="sw s" style="background:#f0f8ff"></div><b>#F0F8FF</b>Alice blue</div>
+  </div>
+
+  <h2>4. Transparency &amp; print-color-adjust</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:var(--chk) 0 0/4mm 4mm, #fff"><div style="height:100%;background:rgba(214,39,40,.5)"></div></div><b>rgba 50% red</b>Checkerboard must show through</div>
+    <div class="tile"><div class="sw" style="background:#1f77b4;opacity:.35"></div><b>opacity: .35</b>Pale blue, blue sheet visible</div>
+    <div class="tile"><div class="sw" style="background:#2ca02c;-webkit-print-color-adjust:exact;print-color-adjust:exact"></div><b>print-color-adjust: exact</b>Always green</div>
+    <div class="tile"><div class="sw" style="background:#2ca02c;-webkit-print-color-adjust:economy;print-color-adjust:economy"></div><b>print-color-adjust: economy</b>May print white &mdash; allowed</div>
+  </div>
+
+  <h2>5. Borders vs background</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:#ff7f0e;border:2mm solid #000"></div><b>2 mm border</b>Orange fills under border</div>
+    <div class="tile"><div class="sw" style="background:#ff7f0e;border:2mm dashed #000"></div><b>dashed border</b>Orange shows in gaps</div>
+    <div class="tile"><div class="sw" style="background:#9467bd;border-radius:6mm"></div><b>border-radius 6 mm</b>Rounded corners, no square bleed</div>
+    <div class="tile"><div class="sw" style="background:#fff;box-shadow:inset 0 0 0 4mm #8c564b"></div><b>inset box-shadow</b>4 mm brown ring</div>
+  </div>
+
+  <footer><span>backgrounds-a4.html</span><span>End of sheet 1</span></footer>
+</section>
+
+<!-- ============================ PAGE 2 ============================ -->
+<section class="page brk">
+  <header><b>CSS Background Print Test - A4</b><span>Page 2 / 3 &middot; Gradients</span></header>
+  <p class="note">Gradients should be smooth with no visible bands, stripes or blocky steps. Hard-stop gradients should have crisp edges.</p>
+
+  <h2>6. Gradient types</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:linear-gradient(90deg,#000,#fff)"></div><b>linear 90deg</b>Black &rarr; white</div>
+    <div class="tile"><div class="sw" style="background:linear-gradient(45deg,#d62728,#1f77b4)"></div><b>linear 45deg</b>Red &rarr; blue diagonal</div>
+    <div class="tile"><div class="sw" style="background:linear-gradient(180deg,#ffff00,#ff00ff,#00ffff)"></div><b>3-stop linear</b>Y &rarr; M &rarr; C</div>
+    <div class="tile"><div class="sw" style="background:linear-gradient(90deg,red,orange,yellow,green,blue,indigo,violet)"></div><b>spectrum</b>7 stops</div>
+    <div class="tile"><div class="sw" style="background:radial-gradient(circle,#fff,#2ca02c)"></div><b>radial circle</b>White centre</div>
+    <div class="tile"><div class="sw" style="background:radial-gradient(ellipse at top left,#ff7f0e,#000)"></div><b>radial ellipse</b>Origin top-left</div>
+    <div class="tile"><div class="sw" style="background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red)"></div><b>conic</b>Colour wheel</div>
+    <div class="tile"><div class="sw" style="background:conic-gradient(#000 25%,#fff 0 50%,#000 0 75%,#fff 0)"></div><b>conic hard stops</b>4 crisp quadrants</div>
+  </div>
+
+  <h2>7. Repeating patterns</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:repeating-linear-gradient(90deg,#000 0 1mm,#fff 1mm 2mm)"></div><b>1 mm stripes</b>1 black bar every 2 mm (12 per 24 mm)</div>
+    <div class="tile"><div class="sw" style="background:repeating-linear-gradient(45deg,#1f77b4 0 2mm,#fff 2mm 4mm)"></div><b>45&deg; stripes</b>Even width</div>
+    <div class="tile"><div class="sw" style="background:repeating-radial-gradient(circle,#d62728 0 1.5mm,#fff 1.5mm 3mm)"></div><b>repeating radial</b>Concentric rings</div>
+    <div class="tile"><div class="sw" style="background:repeating-linear-gradient(0deg,#000 0 0.25mm,#fff 0.25mm 0.5mm)"></div><b>0.25 mm lines</b>Fine; may moir&eacute;</div>
+  </div>
+
+  <h2>8. Banding check (full width)</h2>
+  <div class="sw s" style="background:linear-gradient(90deg,#000,#fff)"></div>
+  <div class="sw s" style="background:linear-gradient(90deg,#fff,#808080)"></div>
+  <div class="sw s" style="background:linear-gradient(90deg,#1f77b4,#1f77b4 10%,#aec7e8)"></div>
+
+  <h2>9. Layered &amp; blended</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:linear-gradient(90deg,rgba(255,255,255,0),#fff),repeating-linear-gradient(0deg,#d62728 0 2mm,#ffbb78 2mm 4mm)"></div><b>2 layers</b>Stripes fade to white right</div>
+    <div class="tile"><div class="sw" style="background:linear-gradient(90deg,#f00,#00f),linear-gradient(0deg,#ff0,#0f0);background-blend-mode:multiply"></div><b>blend: multiply</b>Near-black, red glow lower-left. Plain red&rarr;blue = blend dropped</div>
+    <div class="tile"><div class="sw" style="background:linear-gradient(90deg,#f00,#00f),linear-gradient(0deg,#ff0,#0f0);background-blend-mode:screen"></div><b>blend: screen</b>Yellow / cyan / white. Plain red&rarr;blue = blend dropped</div>
+    <div class="tile"><div class="sw" style="background:linear-gradient(#ff7f0e,#ff7f0e);filter:grayscale(1)"></div><b>filter: grayscale</b>Mid grey, not orange</div>
+  </div>
+
+  <footer><span>backgrounds-a4.html</span><span>End of sheet 2</span></footer>
+</section>
+
+<!-- ============================ PAGE 3 ============================ -->
+<section class="page">
+  <header><b>CSS Background Print Test - A4</b><span>Page 3 / 3 &middot; Background images</span></header>
+  <p class="note">Images are inline SVG data URIs. Check sizes in mm with a ruler: tiles are 24 mm tall.</p>
+
+  <h2>10. Repeat modes</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:var(--dot) 0 0/5mm 5mm repeat"></div><b>repeat, 5 mm</b>Dot grid, ~4.8 rows</div>
+    <div class="tile"><div class="sw" style="background:var(--dot) 0 50%/5mm 5mm repeat-x"></div><b>repeat-x</b>One row, centred vertically</div>
+    <div class="tile"><div class="sw" style="background:var(--dot) 50% 0/5mm 5mm repeat-y"></div><b>repeat-y</b>One column, centred</div>
+    <div class="tile"><div class="sw" style="background:var(--dot) center/5mm 5mm space"></div><b>repeat: space</b>Whole dots, even gaps</div>
+  </div>
+
+  <h2>11. Position &amp; size</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:var(--tgt) right 2mm bottom 2mm/8mm 8mm no-repeat"></div><b>right 2mm bottom 2mm</b>Target in lower-right</div>
+    <div class="tile"><div class="sw" style="background:var(--tgt) center/10mm 10mm no-repeat"></div><b>center, 10 mm</b>Measure: 10 mm wide</div>
+    <div class="tile"><div class="sw" style="background:var(--tgt) center/contain no-repeat #eee"></div><b>contain</b>Circle touches top &amp; bottom</div>
+    <div class="tile"><div class="sw" style="background:var(--tgt) center/cover no-repeat"></div><b>cover</b>Circle cropped left &amp; right</div>
+  </div>
+
+  <h2>12. origin / clip</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:#2ca02c;border:3mm dashed #000;padding:3mm;background-clip:border-box"></div><b>clip: border-box</b>Green under dashes</div>
+    <div class="tile"><div class="sw" style="background:#2ca02c;border:3mm dashed #000;padding:3mm;background-clip:padding-box"></div><b>clip: padding-box</b>White in dash gaps</div>
+    <div class="tile"><div class="sw" style="background:#2ca02c;border:3mm solid #000;padding:3mm;background-clip:content-box"></div><b>clip: content-box</b>3 mm white ring inside border</div>
+    <div class="tile"><div class="sw" style="display:flex;align-items:center;justify-content:center;font:bold 40pt Arial;color:transparent;background:linear-gradient(90deg,#d62728,#1f77b4);-webkit-background-clip:text;background-clip:text">Aa</div><b>clip: text</b>Gradient-filled letters</div>
+  </div>
+
+  <h2>13. Edge cases</h2>
+  <div class="grid g4">
+    <div class="tile"><div class="sw" style="background:var(--tgt) center/10mm 10mm no-repeat fixed #fff8dc"></div><b>attachment: fixed</b>Target may move or vanish in print</div>
+    <div class="tile"><div class="sw" style="background:var(--chk) 0 0/2mm 2mm"></div><b>1 mm checkerboard</b>Crisp squares, no blur</div>
+    <div class="tile"><div class="sw" style="background:var(--chk) 0 0/0.5mm 0.5mm"></div><b>0.25 mm checker</b>Reads as 50% grey</div>
+    <div class="tile"><div class="sw" style="position:relative;overflow:hidden;background:#fff"><div style="position:absolute;top:4mm;bottom:4mm;left:50%;width:16mm;margin-left:-8mm;background:#9467bd;transform:rotate(15deg)"></div></div><b>transformed bg</b>Purple square tilted 15&deg;, clipped to tile</div>
+  </div>
+
+  <footer><span>backgrounds-a4.html</span><span>End of sheet 3</span></footer>
+</section>
+
+</body>
+</html>
