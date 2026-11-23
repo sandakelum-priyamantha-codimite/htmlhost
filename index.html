@@ -109,6 +109,17 @@
     </a>
   </div>
 
+  <h2 class="group">Stress test</h2>
+  <p class="lead small">A heavy ~4&nbsp;MB file that must print as exactly 10 A4 pages: each sheet has an inline noise PNG, an SVG with thousands of vector marks and a dense data table.</p>
+  <div class="grid">
+    <a class="card" href="heavy-a4.html">
+      <div class="thumb"><div class="paper" style="width:85px;height:120px"></div></div>
+      <h2>A4 heavy &times; 10 pages</h2>
+      <p>~4 MB &middot; 10 &times; 210 &times; 297 mm</p>
+      <span class="open">Open test page &rarr;</span>
+    </a>
+  </div>
+
   <section>
     <h2>How to print from Electron</h2>
     <pre><code>win.webContents.print({
